@@ -1,17 +1,16 @@
-
-
-
 import { GiStethoscope } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { AuthContext } from "../Providers/AuthProvider";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import useAxiosPublic from "../Hooks/useAxiosPublic";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 
 const Login = () => {
- const {signIn,googleSignIn} =useContext(AuthContext)
- const axiosPublic = useAxiosPublic();
+  const { signIn, googleSignIn } = useContext(AuthContext);
+  const [showPassword, setShowPassword] = useState(false);
+  const axiosPublic = useAxiosPublic();
   const navigate = useNavigate();
   const handleLogin = (event) => {
     event.preventDefault();
@@ -27,7 +26,7 @@ const Login = () => {
         showConfirmButton: false,
         timer: 1500,
       });
-      navigate(from, { replace: true });
+      navigate("/allPatients", { replace: true });
     });
   };
   const handeleGoogleSignIn = () => {
@@ -36,7 +35,6 @@ const Login = () => {
         email: result.user?.email,
         name: result.user?.displayName,
         photo: result.user?.photoURL,
-      
       };
       axiosPublic.post("/users", userInfo).then((res) => {
         Swal.fire({
@@ -46,11 +44,11 @@ const Login = () => {
           showConfirmButton: false,
           timer: 1500,
         });
-        navigate(from, { replace: true });
+        navigate("/allPatients", { replace: true });
       });
     });
   };
- 
+
   const togglePasswordVisibility = () => {
     setShowPassword((prevState) => !prevState);
   };
@@ -64,19 +62,15 @@ const Login = () => {
           </div>
         </div>
 
-        {/* Title */}
         <h2 className="text-3xl font-bold text-center text-teal-700 mt-12 mb-6">
           Pediatric Oncology Login
         </h2>
 
-        {/* Subtitle */}
         <p className="text-gray-500 text-center mb-8">
           Securely access patient data and records.
         </p>
 
-        {/* Form */}
-        <form onSubmit={handleLogin}  >
-          {/* Email Input */}
+        <form onSubmit={handleLogin}>
           <div className="mb-4">
             <label
               className="block text-gray-700 text-sm font-semibold mb-2"
@@ -93,44 +87,46 @@ const Login = () => {
             />
           </div>
 
-          {/* Password Input */}
-          <div className="mb-6">
-            <label
-              className="block text-gray-700 text-sm font-semibold mb-2"
-              htmlFor="password"
-            >
-              Password
+          <div className="form-control relative mb-10">
+            <label className="label">
+              <span className="label-text">Password</span>
             </label>
             <input
-              type="password"
-              id="password"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-              placeholder="Enter your password"
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="password"
+              className="input input-bordered bg-transparent border-2 border-teal-900 pr-10" 
               required
             />
+            <div
+              className="absolute inset-y-16 right-0 pr-3 flex items-center cursor-pointer text-teal-900"
+              onClick={togglePasswordVisibility}
+            >
+              {showPassword ? (
+                <FaRegEyeSlash className="text-xl text-blue-900" />
+              ) : (
+                <FaRegEye className="text-xl text-blue-900" />
+              )}
+            </div>
           </div>
 
-          {/* Login Button */}
           <button
             type="submit"
             className="w-full bg-teal-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-teal-500 transition duration-300 shadow-md"
           >
             Login
           </button>
-         
-
-          {/* Forgot Password */}
-         
         </form>
         <div className="text-center mt-10">
-         <h6 className="mb-5">OR</h6>
-          <button onClick={handeleGoogleSignIn} className="w-full p-2 border border-teal-700 hover:bg-teal-200 shadow-md flex justify-center rounded-xl gap-2 text-xl font-bold">
-          Google<FcGoogle className="text-3xl text-center font-bold" />
+          <h6 className="mb-5">OR</h6>
+          <button
+            onClick={handeleGoogleSignIn}
+            className="w-full p-2 border border-teal-700 hover:bg-teal-200 shadow-md flex justify-center rounded-xl gap-2 text-xl font-bold"
+          >
+            Google
+            <FcGoogle className="text-3xl text-center font-bold" />
           </button>
-         </div>
-
-        {/* Footer Links */}
-       
+        </div>
       </div>
     </div>
   );

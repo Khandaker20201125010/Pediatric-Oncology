@@ -1,11 +1,18 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation, } from "react-router-dom";
+import Navbar from "../Navbar/Navbar";
 
 const Main = () => {
-    return (
-        <div>
-            <Outlet />
-        </div>
-    );
+  const location = useLocation();
+  const noHeaderFooter = location.pathname === "/" || location.pathname === "/signUp";
+   
+  return (
+    <div className="">
+    
+      {noHeaderFooter || <Navbar></Navbar>}
+     
+      <Outlet />
+    </div>
+  );
 };
 
 export default Main;

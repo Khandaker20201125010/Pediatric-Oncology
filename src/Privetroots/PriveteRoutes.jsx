@@ -1,10 +1,12 @@
 
 import { Navigate, useLocation } from "react-router-dom";
-import useAuth from "../Hooks/useAuth";
+
 import Swal from "sweetalert2";
+import { AuthContext } from "../Providers/AuthProvider";
+import { useContext } from "react";
 
 const PriveteRoutes = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { user, loading } = useContext(AuthContext);
   const location = useLocation();
 
   if (loading) {
@@ -33,7 +35,7 @@ const PriveteRoutes = ({ children }) => {
     timer: 3000,
   });
 
-  return <Navigate state={{ from: location }} to="/login" replace />;
+  return <Navigate state={{ from: location }} to="/" replace />;
 };
 
 export default PriveteRoutes;
