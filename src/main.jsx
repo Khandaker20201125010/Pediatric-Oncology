@@ -10,6 +10,7 @@ import Login from './User/Login';
 import AllPatients from './Patient/AllPatients';
 import PatientDetails from './Patient/PatientDetails';
 import Dashboard from './Dashboard/Dashboard';
+import AuthProvider from './Providers/AuthProvider';
 
 const router = createBrowserRouter([
   {
@@ -41,6 +42,6 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router} />
+   <AuthProvider> <RouterProvider router={router} /></AuthProvider>
   </StrictMode>,
 )
