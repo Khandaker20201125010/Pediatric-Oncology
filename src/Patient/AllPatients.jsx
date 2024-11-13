@@ -1,6 +1,7 @@
 import { useState } from "react";
-import Patient from "./patient";
+
 import { useLoaderData } from "react-router-dom";
+import Patient from "./Patient";
 
 const AllPatients = () => {
 

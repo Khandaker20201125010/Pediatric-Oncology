@@ -197,7 +197,7 @@ const Dashboard = () => {
               <div>
                 <label className="block text-sm font-semibold text-gray-800">Necessity Dosage</label>
                 <input
-                  type="text"
+                  type="number"
                   name="necessityDosage"
                   placeholder="Enter necessity dose"
                   className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
