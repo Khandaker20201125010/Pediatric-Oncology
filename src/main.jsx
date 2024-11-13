@@ -11,6 +11,7 @@ import AllPatients from './Patient/AllPatients';
 import PatientDetails from './Patient/PatientDetails';
 import Dashboard from './Dashboard/Dashboard';
 import AuthProvider from './Providers/AuthProvider';
+import PriveteRoutes from './Privetroots/PriveteRoutes';
 
 const router = createBrowserRouter([
   {
@@ -24,17 +25,17 @@ const router = createBrowserRouter([
       },
       {
         path: "/allPatients",
-        element: <AllPatients />,
+        element: <PriveteRoutes><AllPatients /></PriveteRoutes>,
         loader: () => fetch('http://localhost:5000/allPatients')
       },
       {
         path: "/patientDetails/:id",
-        element: <PatientDetails />,
+        element:<PriveteRoutes><PatientDetails /></PriveteRoutes> ,
         loader: ({ params }) => fetch(`http://localhost:5000/allPatients/${params.id}`)
       },
       {
         path: "/dashboard",
-        element: <Dashboard />,
+        element:<PriveteRoutes><Dashboard /></PriveteRoutes> ,
       },
     ],
   },

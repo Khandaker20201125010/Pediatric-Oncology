@@ -75,7 +75,7 @@ const Login = () => {
         </p>
 
         {/* Form */}
-        <form>
+        <form onSubmit={handleLogin}  >
           {/* Email Input */}
           <div className="mb-4">
             <label
