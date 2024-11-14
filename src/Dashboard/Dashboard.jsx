@@ -1,9 +1,11 @@
 // Dashboard.js
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
 const Dashboard = () => {
+  const navigate = useNavigate()
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -64,6 +66,7 @@ const Dashboard = () => {
           icon: 'success',
           confirmButtonText: 'Great'
         })
+        navigate('/allPatients')
         // Handle success or error
       })
       .catch(error => {

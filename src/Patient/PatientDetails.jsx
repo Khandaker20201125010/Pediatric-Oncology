@@ -18,7 +18,6 @@ const PatientDetails = () => {
   const [showModal, setShowModal] = useState(false);
   const [dayCount, setDayCount] = useState(1);
 
-
   const {
     _id,
     name,
@@ -193,14 +192,14 @@ const PatientDetails = () => {
   const handleAddDay = () => {
     setShowModal(true);
   };
-    const openModal = () => {
+  const openModal = () => {
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
   };
-   const handleAddMedicineSubmit = (e) => {
+  const handleAddMedicineSubmit = (e) => {
     e.preventDefault();
 
     const form = e.target;
@@ -220,7 +219,10 @@ const PatientDetails = () => {
     };
 
     const updatedMedicines = [...patient.medicines, newMedicine];
-    setPatient((prevPatient) => ({ ...prevPatient, medicines: updatedMedicines }));
+    setPatient((prevPatient) => ({
+      ...prevPatient,
+      medicines: updatedMedicines,
+    }));
 
     fetch(`http://localhost:5000/allPatients/${_id}`, {
       method: "PUT",
@@ -230,13 +232,20 @@ const PatientDetails = () => {
       .then((response) => response.json())
       .then((data) => {
         if (data && data.medicines) {
-          setPatient((prevPatient) => ({ ...prevPatient, medicines: data.medicines }));
+          setPatient((prevPatient) => ({
+            ...prevPatient,
+            medicines: data.medicines,
+          }));
           Swal.fire("Success!", "New medicine added successfully.", "success");
         }
       })
       .catch((error) => {
         console.error("Error adding medicine:", error);
-        Swal.fire("Error!", "There was a problem adding the new medicine. Please try again.", "error");
+        Swal.fire(
+          "Error!",
+          "There was a problem adding the new medicine. Please try again.",
+          "error"
+        );
       });
 
     closeModal();
@@ -327,13 +336,16 @@ const PatientDetails = () => {
                 </p>
                 <div className="flex justify-center space-x-2 text-lg">
                   <p>
-                    {med.medicineDose} {med.measurementUnit}
+                  Dosage: <span className="text-red-500 font-bold"> {med.medicineDosage}</span> {med.measurementUnit}
                   </p>
-                  <p>{med.intakeType}</p>
+                  <p>Intake-Type:{med.intakeType}</p>
                 </div>
                 <p className="font-medium text-gray-500">
-                <span>  {(med.necessityDosage * med.medicineDosage).toFixed(2)}{" "}</span>
-                  {med.measurementUnit} total
+                  <span>
+                    {" "}
+                    {(med.necessityDosage * med.medicineDosage).toFixed(2)}{" "}
+                  </span>
+                  {med.measurementUnit} Total
                 </p>
               </div>
 
@@ -419,42 +431,93 @@ const PatientDetails = () => {
         </button>
 
         {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-xl font-semibold mb-4">Add New Medicine</h2>
-            <form onSubmit={handleAddMedicineSubmit}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">Medicine Name</label>
-                <input type="text" name="medicineName" required className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-500" />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">Dosage</label>
-                <input type="number" name="medicineDosage" required className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-500" />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">Measurement Unit</label>
-                <input type="text" name="measurementUnit" required className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-500" />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">Intake Type</label>
-                <input type="text" name="intakeType" required className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-500" />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">Necessity Dosage</label>
-                <input type="number" name="necessityDosage" required className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-500" />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">Day</label>
-                <input type="number" name="day" required className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-500" />
-              </div>
-              <div className="flex justify-end">
-                <button type="button" onClick={closeModal} className="px-4 py-2 text-gray-600">Cancel</button>
-                <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-lg">Add</button>
-              </div>
-            </form>
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+              <h2 className="text-xl font-semibold mb-4">Add New Medicine</h2>
+              <form onSubmit={handleAddMedicineSubmit}>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">
+                    Medicine Name
+                  </label>
+                  <input
+                    type="text"
+                    name="medicineName"
+                    required
+                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-500"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">
+                    Dosage
+                  </label>
+                  <input
+                    type="number"
+                    name="medicineDosage"
+                    required
+                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-500"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">
+                    Measurement Unit
+                  </label>
+                  <input
+                    type="text"
+                    name="measurementUnit"
+                    required
+                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-500"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">
+                    Intake Type
+                  </label>
+                  <input
+                    type="text"
+                    name="intakeType"
+                    required
+                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-500"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">
+                    Necessity Dosage
+                  </label>
+                  <input
+                    type="number"
+                    name="necessityDosage"
+                    required
+                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-500"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-1">Day</label>
+                  <input
+                    type="number"
+                    name="day"
+                    required
+                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-500"
+                  />
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={closeModal}
+                    className="px-4 py-2 text-gray-600"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+                  >
+                    Add
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
+        )}
       </div>
     </div>
   );
