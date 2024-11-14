@@ -94,7 +94,7 @@ const PatientDetails = () => {
         return { ...prevPatient, medicines: updatedMedicines };
       });
 
-      fetch(`http://localhost:5000/allPatients/${_id}`, {
+      fetch(`https://pediatric-oncology-server.vercel.app/allPatients/${_id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -156,7 +156,7 @@ const PatientDetails = () => {
     }));
 
     try {
-      const response = await fetch(`http://localhost:5000/allPatients/${_id}`, {
+      const response = await fetch(`https://pediatric-oncology-server.vercel.app/allPatients/${_id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ medicines: updatedMedicines }),
@@ -224,7 +224,7 @@ const PatientDetails = () => {
       medicines: updatedMedicines,
     }));
 
-    fetch(`http://localhost:5000/allPatients/${_id}`, {
+    fetch(`https://pediatric-oncology-server.vercel.app/allPatients/${_id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ medicines: updatedMedicines }),
@@ -336,16 +336,16 @@ const PatientDetails = () => {
                 </p>
                 <div className="flex justify-center space-x-2 text-lg">
                   <p>
-                  Dosage: <span className="text-red-500 font-bold"> {med.medicineDosage}</span> {med.measurementUnit}
+                  Dosage: <span className="text-blue-500 font-bold"> {med.medicineDosage}</span> {med.measurementUnit}
                   </p>
                   <p>Intake-Type:{med.intakeType}</p>
                 </div>
                 <p className="font-medium text-gray-500">
                   <span>
                     {" "}
-                    {(med.necessityDosage * med.medicineDosage).toFixed(2)}{" "}
+                    Total: <span className="text-red-500 font-bold"> {(med.necessityDosage * med.medicineDosage).toFixed(2)}</span>{" "}
                   </span>
-                  {med.measurementUnit} Total
+                  {med.measurementUnit}
                 </p>
               </div>
 
@@ -452,6 +452,7 @@ const PatientDetails = () => {
                   </label>
                   <input
                     type="number"
+                    step="any"
                     name="medicineDosage"
                     required
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-500"
@@ -485,6 +486,7 @@ const PatientDetails = () => {
                   </label>
                   <input
                     type="number"
+                    step="any"
                     name="necessityDosage"
                     required
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-500"

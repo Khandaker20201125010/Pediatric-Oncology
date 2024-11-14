@@ -33,12 +33,12 @@ const router = createBrowserRouter([
       {
         path: '/allPatients',
         element: <PriveteRoutes><AllPatients /></PriveteRoutes>,
-        loader: () => fetch('http://localhost:5000/allPatients'),
+        loader: () => fetch('https://pediatric-oncology-server.vercel.app/allPatients'),
       },
       {
         path: '/patientDetails/:id',
         element: <PriveteRoutes><PatientDetails /></PriveteRoutes>,
-        loader: ({ params }) => fetch(`http://localhost:5000/allPatients/${params.id}`),
+        loader: ({ params }) => fetch(`https://pediatric-oncology-server.vercel.app/allPatients/${params.id}`),
       },
       {
         path: '/dashboard',

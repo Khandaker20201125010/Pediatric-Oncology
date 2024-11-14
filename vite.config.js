@@ -8,7 +8,7 @@ export default defineConfig({
     proxy: {
       // Proxy API requests to backend
       '/api': {
-        target: 'http://localhost:5000', // The backend server
+        target: 'https://pediatric-oncology-server.vercel.app', // The backend server
         changeOrigin: true,
         secure: false,
       },
