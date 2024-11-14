@@ -1,11 +1,12 @@
 import { GiStethoscope } from "react-icons/gi";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { AuthContext } from "../Providers/AuthProvider";
 import { useContext, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import useAxiosPublic from "../Hooks/useAxiosPublic";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import { Helmet } from "react-helmet-async";
 
 const Login = () => {
   const { signIn, googleSignIn } = useContext(AuthContext);
@@ -17,18 +18,39 @@ const Login = () => {
     const form = event.target;
     const email = form.email.value;
     const password = form.password.value;
-    signIn(email, password).then((result) => {
-      const user = result.user;
-      Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "Logging successful",
-        showConfirmButton: false,
-        timer: 1500,
+
+    signIn(email, password)
+      .then((result) => {
+        const user = result.user;
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Login successful",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        navigate("/allPatients", { replace: true });
+      })
+      .catch((error) => {
+        if (error.message.includes("no user record")) {
+          Swal.fire({
+            position: "center",
+            icon: "info",
+            title: "Account not found. Please sign in with Google.",
+            showConfirmButton: true,
+          });
+        } else {
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "Invalid email or password",
+            text: "Please try again or sign in with Google.",
+            showConfirmButton: true,
+          });
+        }
       });
-      navigate("/allPatients", { replace: true });
-    });
   };
+
   const handeleGoogleSignIn = () => {
     googleSignIn().then((result) => {
       const userInfo = {
@@ -54,6 +76,7 @@ const Login = () => {
   };
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-50 to-blue-100">
+      <Helmet>Login || Pediatric Oncology</Helmet>
       <div className="relative bg-white shadow-xl rounded-lg p-10 w-full max-w-lg border border-gray-200">
         {/* Medical Logo/Icon */}
         <div className="absolute -top-12 left-1/2 transform -translate-x-1/2">
@@ -95,7 +118,7 @@ const Login = () => {
               type={showPassword ? "text" : "password"}
               name="password"
               placeholder="password"
-              className="input input-bordered bg-transparent border-2 border-teal-900 pr-10" 
+              className="input input-bordered bg-transparent border-2 border-teal-900 pr-10"
               required
             />
             <div
@@ -126,6 +149,14 @@ const Login = () => {
             Google
             <FcGoogle className="text-3xl text-center font-bold" />
           </button>
+        </div>
+        <div className="mt-5">
+          Don't have an account?{" "}
+          <Link to="/signUp">
+            <button>
+              <span className="text-red-500 hover:font-bold">Sign UP</span>
+            </button>
+          </Link>
         </div>
       </div>
     </div>

@@ -42,6 +42,57 @@ const Navbar = () => {
       </li>
     </>
   );
+  const mlinks = (
+    <>
+      <li>
+        <NavLink
+          data-tip="All Patients"
+          className={({ isActive }) => {
+            return isActive
+              ? "font-bold text-blue-900 hover:text-blue-700 tooltip tooltip-warning  text-xl  tooltip-bottom rounded-full"
+              : "font-bold text-teal-900 hover:text-blue-600 tooltip tooltip-warning tooltip-bottom text-xl";
+          }}
+          to="/allPatients"
+        >
+          All Patients
+        </NavLink>
+      </li>
+
+      <li>
+        <NavLink
+          data-tip="Dashboard"
+          className={({ isActive }) => {
+            return isActive
+              ? "font-bold text-blue-900 hover:text-blue-700 tooltip tooltip-warning  text-xl  tooltip-bottom rounded-full"
+              : "font-bold text-teal-900 hover:text-blue-600 tooltip tooltip-warning tooltip-bottom text-xl";
+          }}
+          to="/dashboard"
+        >
+          Dashboard
+        </NavLink>
+      </li>
+      <li>
+        {user ? (
+          <>
+            <button
+              className=" btn btn-success btn-sm text-white "
+              onClick={handelLogOut}
+            >
+              Leave
+            </button>
+          </>
+        ) : (
+          <>
+            <Link to="/">
+              <button className="btn btn-success btn-sm text-white">
+                Join us
+              </button>
+            </Link>
+          </>
+        )}
+      </li>
+    </>
+  );
   return (
     <div className="bg-teal-100">
       <div className="">
@@ -72,23 +123,7 @@ const Navbar = () => {
                 tabIndex={0}
                 className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
               >
-                <li>
-                  <a>Item 1</a>
-                </li>
-                <li>
-                  <a>Parent</a>
-                  <ul className="p-2">
-                    <li>
-                      <a>Submenu 1</a>
-                    </li>
-                    <li>
-                      <a>Submenu 2</a>
-                    </li>
-                  </ul>
-                </li>
-                <li>
-                  <a>Item 3</a>
-                </li>
+                {mlinks}
               </ul>
             </div>
             <a className="ml-10 font-bold text-xl">Pediatric-Oncology</a>
@@ -97,17 +132,24 @@ const Navbar = () => {
             <ul className=" menu-horizontal gap-5 px-1 text-blue">{links}</ul>
           </div>
           <div className="navbar-end">
-            <>
-              <button className="text-xl text-center" onClick={handelLogOut}>
-                Leave
-              </button>
-            </>
-            ?
-            <>
-              <Link to="/">
-                <button className=" text-xl text-center">Join us</button>
-              </Link>
-            </>
+            {user ? (
+              <>
+                <button
+                  className=" btn btn-success btn-sm text-white "
+                  onClick={handelLogOut}
+                >
+                  Leave
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/">
+                  <button className="btn btn-success btn-sm text-white">
+                    Join us
+                  </button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>

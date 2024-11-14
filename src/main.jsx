@@ -12,6 +12,8 @@ import PatientDetails from './Patient/PatientDetails';
 import Dashboard from './Dashboard/Dashboard';
 import AuthProvider from './Providers/AuthProvider';
 import PriveteRoutes from './Privetroots/PriveteRoutes';
+import { HelmetProvider } from 'react-helmet-async';
+import SignUp from './Signup/SignUp';
 
 const router = createBrowserRouter([
   {
@@ -22,6 +24,10 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Login />
+      },
+      {
+        path: "/signUp",
+        element: <SignUp />
       },
       {
         path: "/allPatients",
@@ -43,6 +49,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
+   <HelmetProvider>
    <AuthProvider> <RouterProvider router={router} /></AuthProvider>
+   </HelmetProvider> 
   </StrictMode>,
 )

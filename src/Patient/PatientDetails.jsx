@@ -9,6 +9,7 @@ import {
 import dayjs from "dayjs";
 import { useState } from "react";
 import Swal from "sweetalert2";
+import { Helmet } from "react-helmet-async";
 
 const PatientDetails = () => {
   const patientData = useLoaderData();
@@ -243,6 +244,7 @@ const PatientDetails = () => {
 
   return (
     <div className="container mx-auto mt-12 p-8 bg-gray-50 rounded-lg shadow-lg  border ">
+      <Helmet>Patient Details || Pediatric Oncology</Helmet>
       <div className="border-b pb-6 mb-6">
         <h2 className="text-5xl font-bold text-blue-700 mb-2">
           {name}'s Medical Overview

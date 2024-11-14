@@ -16,7 +16,7 @@ const AuthProvider = ({ children }) => {
     const googleAuthProvider  = new GoogleAuthProvider();
     const createUser = (email, password) => {
         setLoading(true);
-        return createUserWithEmailAndPassword(auth, email, password);
+        return createUserWithEmailAndPassword(auth, email, password)
     }
      
     const signIn = (email, password) => {
@@ -32,13 +32,10 @@ const AuthProvider = ({ children }) => {
         setLoading(true);
         return signOut(auth);
     }
-    const updateUser= (name,photo) =>{
-      setLoading(true);
-      return updateProfile(user,{
-        displayName : name ,
-        photoURL : photo
-      });
-      
+    const updateUserProfile = (name, photo) => {
+        return updateProfile(auth.currentUser, {
+            displayName: name, photoURL: photo
+        });
     }
 
     useEffect(() => {
@@ -57,7 +54,7 @@ const AuthProvider = ({ children }) => {
         createUser,
         signIn,
         logOut,
-        updateUser,
+        updateUserProfile,
         googleSignIn
     }
 

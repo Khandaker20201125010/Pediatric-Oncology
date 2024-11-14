@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { useLoaderData } from "react-router-dom";
 import Patient from "./Patient";
+import { Helmet } from "react-helmet-async";
 
 const AllPatients = () => {
 
@@ -24,6 +25,7 @@ const AllPatients = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 py-10">
+      <Helmet>All Patients || Pediatric Oncology</Helmet>
       <h1 className="text-3xl font-bold text-center text-teal-700 mb-10">
         All Patients
       </h1>

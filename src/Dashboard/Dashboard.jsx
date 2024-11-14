@@ -1,5 +1,6 @@
 // Dashboard.js
 import { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import Swal from 'sweetalert2';
 
 const Dashboard = () => {
@@ -77,6 +78,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 py-10">
+      <Helmet>Dashboard || Pediatric Oncology</Helmet>
       <div className="max-w-4xl mx-auto bg-white shadow-xl rounded-lg p-10">
         <h1 className="text-4xl font-bold text-center text-blue-700 mb-8">Patient Data Upload</h1>
         <form className="space-y-8" onSubmit={handleSubmit}>
