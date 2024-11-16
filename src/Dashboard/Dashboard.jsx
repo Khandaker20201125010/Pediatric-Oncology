@@ -1,10 +1,12 @@
 // Dashboard.js
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { AuthContext } from "../Providers/AuthProvider";
 
 const Dashboard = () => {
+  const {user} =useContext(AuthContext);
   const navigate = useNavigate();
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -26,6 +28,7 @@ const Dashboard = () => {
     const day = form.day.value;
 
     const patient = {
+      email: user?.email,
       name,
       age,
       height,

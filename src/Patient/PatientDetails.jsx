@@ -10,6 +10,7 @@ import dayjs from "dayjs";
 import { useState } from "react";
 import Swal from "sweetalert2";
 import { Helmet } from "react-helmet-async";
+import { MdOutlineAutoDelete } from "react-icons/md";
 
 const PatientDetails = () => {
   const patientData = useLoaderData();
@@ -134,7 +135,7 @@ const PatientDetails = () => {
     }
   };
 
-  const addDaysToSchedule = async () => {
+  const addDaysToSchedule = async (medicineName) => {
     const newDate = dayjs(initialDate)
       .add(dayCount - 1, "day")
       .format("YYYY-MM-DD");
@@ -145,10 +146,16 @@ const PatientDetails = () => {
       taken: false,
     };
 
-    const updatedMedicines = patient.medicines.map((med) => ({
-      ...med,
-      schedule: [...med.schedule, newSchedule],
-    }));
+    // Find the medicine to update by its name
+    const updatedMedicines = patient.medicines.map((med) => {
+      if (med.medicineName === medicineName) {
+        return {
+          ...med,
+          schedule: [...med.schedule, newSchedule], // Add the new day only to this medicine
+        };
+      }
+      return med; // Other medicines remain unchanged
+    });
 
     setPatient((prevPatient) => ({
       ...prevPatient,
@@ -156,11 +163,14 @@ const PatientDetails = () => {
     }));
 
     try {
-      const response = await fetch(`https://pediatric-oncology-server.vercel.app/allPatients/${_id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ medicines: updatedMedicines }),
-      });
+      const response = await fetch(
+        `https://pediatric-oncology-server.vercel.app/allPatients/${_id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ medicines: updatedMedicines }),
+        }
+      );
       const data = await response.json();
       if (data && data.medicines) {
         setPatient((prevPatient) => ({
@@ -169,7 +179,7 @@ const PatientDetails = () => {
         }));
         Swal.fire(
           "Success!",
-          `Day ${dayCount} added to the schedule.`,
+          `Day ${dayCount} added to the schedule for medicine: ${medicineName}.`,
           "success"
         );
       }
@@ -189,9 +199,11 @@ const PatientDetails = () => {
     setShowModal(false);
   };
 
-  const handleAddDay = () => {
-    setShowModal(true);
+  const handleAddDay = (medicineName) => {
+    setDayCount(1); // Reset day count for each new addition
+    setShowModal(medicineName); // Pass the specific medicine name
   };
+
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -250,7 +262,66 @@ const PatientDetails = () => {
 
     closeModal();
   };
-
+  const handleDeleteDay = async (medicineIndex, scheduleIndex) => {
+    const scheduleItem = patient.medicines[medicineIndex].schedule[scheduleIndex];
+    
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: `Do you want to delete Day ${scheduleItem.day}?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+  
+    if (result.isConfirmed) {
+      // Update local state
+      const updatedMedicines = [...patient.medicines];
+      updatedMedicines[medicineIndex].schedule.splice(scheduleIndex, 1);
+  
+      setPatient((prevPatient) => ({
+        ...prevPatient,
+        medicines: updatedMedicines,
+      }));
+  
+      try {
+        // Update backend
+        const response = await fetch(
+          `https://pediatric-oncology-server.vercel.app/allPatients/${_id}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ medicines: updatedMedicines }),
+          }
+        );
+        const data = await response.json();
+  
+        if (data && data.medicines) {
+          setPatient((prevPatient) => ({
+            ...prevPatient,
+            medicines: data.medicines,
+          }));
+          Swal.fire("Deleted!", "The day has been deleted.", "success");
+        }
+      } catch (error) {
+        console.error("Error deleting schedule day:", error);
+  
+        // Revert state in case of failure
+        setPatient((prevPatient) => ({
+          ...prevPatient,
+          medicines: patient.medicines,
+        }));
+  
+        Swal.fire(
+          "Error!",
+          "There was a problem deleting the day. Please try again.",
+          "error"
+        );
+      }
+    }
+  };
+  
   return (
     <div className="container mx-auto mt-12 p-8 bg-gray-50 rounded-lg shadow-lg  border ">
       <Helmet>Patient Details || Pediatric Oncology</Helmet>
@@ -336,14 +407,24 @@ const PatientDetails = () => {
                 </p>
                 <div className="flex justify-center space-x-2 text-lg">
                   <p>
-                  Dosage: <span className="text-blue-500 font-bold"> {med.medicineDosage}</span> {med.measurementUnit}
+                    Dosage:{" "}
+                    <span className="text-blue-500 font-bold">
+                      {" "}
+                      {med.medicineDosage}
+                    </span>{" "}
+                    {med.measurementUnit}
                   </p>
                   <p>Intake-Type:{med.intakeType}</p>
                 </div>
                 <p className="font-medium text-gray-500">
                   <span>
                     {" "}
-                    Total: <span className="text-red-500 font-bold"> {(med.necessityDosage * med.medicineDosage).toFixed(2)}</span>{" "}
+                    Total:{" "}
+                    <span className="text-red-500 font-bold">
+                      {(
+                        Math.sqrt((height * weight) / 3600) * med.medicineDosage
+                      ).toFixed(3)}
+                    </span>
                   </span>
                   {med.measurementUnit}
                 </p>
@@ -359,15 +440,30 @@ const PatientDetails = () => {
                       key={scheduleIndex}
                       className="flex flex-col items-center"
                     >
-                      <div
-                        onClick={() => handleDayClick(medIndex, scheduleIndex)}
-                        className={`${getScheduleColor(
-                          schedule.taken,
-                          schedule.date
-                        )} text-white rounded-full px-4 py-2 mb-1 text-center text-sm font-medium transition-transform hover:scale-105 cursor-pointer`}
-                      >
-                        Day {schedule.day}
+                      <div className="flex gap-2">
+                        <div
+                          onClick={() =>
+                            handleDayClick(medIndex, scheduleIndex)
+                          }
+                          className={`${getScheduleColor(
+                            schedule.taken,
+                            schedule.date
+                          )} 
+      text-white rounded-full px-4 py-2 mb-1 text-center text-sm font-medium 
+      transition-transform hover:scale-105 cursor-pointer`}
+                        >
+                          Day {schedule.day}
+                        </div>
+                        <button
+                          onClick={() =>
+                            handleDeleteDay(medIndex, scheduleIndex)
+                          }
+                          className="hover:scale-105 transition-transform"
+                        >
+                          <MdOutlineAutoDelete className="text-red-500 text-2xl" />
+                        </button>
                       </div>
+
                       <p className="text-gray-700 text-sm font-medium">
                         {schedule.date}
                       </p>
@@ -375,7 +471,7 @@ const PatientDetails = () => {
                   ))}
                   <div className="flex flex-col items-center">
                     <button
-                      onClick={handleAddDay}
+                      onClick={() => handleAddDay(med.medicineName)}
                       className="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-4 py-2 text-center text-sm font-medium transition-transform hover:scale-105 flex items-center space-x-1"
                     >
                       <FaPlus /> <span>Add day</span>
@@ -393,7 +489,7 @@ const PatientDetails = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full">
             <h3 className="text-2xl font-semibold text-blue-700 mb-4">
-              Add Days to Schedule
+              Add Days to Schedule for {showModal}
             </h3>
             <p className="text-gray-600 mb-4">
               Enter the number of days to add:
@@ -412,7 +508,7 @@ const PatientDetails = () => {
                 Cancel
               </button>
               <button
-                onClick={addDaysToSchedule}
+                onClick={() => addDaysToSchedule(showModal)}
                 className="px-4 py-2 bg-blue-500 rounded-lg hover:bg-blue-600 text-white"
               >
                 Add
