@@ -12,6 +12,7 @@ import PriveteRoutes from './Privetroots/PriveteRoutes';
 import { HelmetProvider } from 'react-helmet-async';
 import SignUp from './Signup/SignUp';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import UpdatePatient from './Main/updatePatient/updatePatient';
 
 // Create an instance of QueryClient
 const queryClient = new QueryClient();
@@ -34,6 +35,11 @@ const router = createBrowserRouter([
         path: '/allPatients',
         element: <PriveteRoutes><AllPatients /></PriveteRoutes>,
         loader: () => fetch('https://pediatric-oncology-server.vercel.app/allPatients'),
+      },
+      {
+        path: '/updatePatient/:id',
+        element: <PriveteRoutes><UpdatePatient /></PriveteRoutes>,
+      
       },
       {
         path: '/patientDetails/:id',
