@@ -7,7 +7,6 @@ import Swal from "sweetalert2";
 import { Helmet } from "react-helmet-async";
 import { FaUserEdit } from "react-icons/fa";
 
-
 const UpdatePatient = () => {
   const { user } = useContext(AuthContext);
   const axiosPublic = useAxiosPublic();
@@ -36,7 +35,32 @@ const UpdatePatient = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const form = e.target;
-
+  
+    // Copy the existing medicines array to avoid mutation
+    const updatedMedicines = [...medicines];
+  
+    // Check if the medicine fields are filled out and update accordingly
+    if (form.medicineName.value || form.medicineDosage.value) {
+      updatedMedicines[0] = {
+        medicineName: form.medicineName.value || updatedMedicines[0].medicineName,
+        medicineDosage: form.medicineDosage.value || updatedMedicines[0].medicineDosage,
+        measurementUnit: form.measurementUnit.value || updatedMedicines[0].measurementUnit,
+        intakeType: form.intakeType.value || updatedMedicines[0].intakeType,
+        necessityDosage: form.necessityDosage.value || updatedMedicines[0].necessityDosage,
+        schedule: [
+          ...updatedMedicines[0].schedule, // Retain the existing schedule
+          ...(form.day.value && !updatedMedicines[0].schedule.some(sch => sch.day === form.day.value) ? [
+            {
+              day: form.day.value,
+              date: appointmentDate, // Keep the original appointment date
+              taken: false,
+            }
+          ] : []), // Only add new day if it's not already in the schedule
+        ],
+      };
+    }
+  
+    // Now construct the patient object with updated medicines
     const patient = {
       email: user?.email,
       name: form.patientName.value,
@@ -45,27 +69,12 @@ const UpdatePatient = () => {
       weight: form.weight.value,
       disease: form.disease.value,
       diagnosis: form.diagnosis.value,
-      appointmentDate: form.appointmentDate.value,
-      medicines: [
-        {
-          medicineName: form.medicineName.value,
-          medicineDosage: form.medicineDosage.value,
-          measurementUnit: form.measurementUnit.value,
-          intakeType: form.intakeType.value,
-          necessityDosage: form.necessityDosage.value,
-          schedule: [
-            {
-              day: form.day.value,
-              date: form.appointmentDate.value,
-              taken: false,
-            },
-          ],
-        },
-      ],
+      medicines: updatedMedicines, // Updated medicines array
     };
-
+  
+    // Send the PUT request to update the patient details
     fetch(`https://pediatric-oncology-server.vercel.app/allPatients/${id}`, {
-      method: "PUT", // Use PUT for updating
+      method: "PUT", // PUT method to update
       headers: {
         "Content-Type": "application/json",
       },
@@ -85,165 +94,169 @@ const UpdatePatient = () => {
         }
       });
   };
+  
+  
+  
 
   return (
-    <div className="p-8 bg-green-100 shadow-xl rounded-lg max-w-3xl mx-auto border border-gray-200 mt-5">
-    <Helmet>
-      <title>Update Patient</title>
-    </Helmet>
-    
-    {/* Title */}
-    <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center border-b pb-4">
-    <FaUserEdit /> Update Patient
-    </h2>
-    
-    {/* Form */}
-    <form onSubmit={handleSubmit}>
-      {/* Patient Details */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="form-group">
-          <label className="text-gray-600 font-medium mb-2 block">Patient Name</label>
+   <div className="min-h-screen bg-gray-100 p-2">
+     <div className="p-8 bg-green-100 shadow-xl rounded-lg max-w-3xl mx-auto border border-gray-200">
+      <Helmet>
+        <title>Update Patient</title>
+      </Helmet>
+      <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
+        <FaUserEdit></FaUserEdit> Update Patient
+      </h2>
+
+      <form onSubmit={handleSubmit}>
+        {/* Patient Details */}
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="form-control">
+            <label className="font-medium">Patient Name</label>
+            <input
+              type="text"
+              name="patientName"
+              defaultValue={name}
+              placeholder="Enter patient name"
+              className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm"
+            />
+          </div>
+
+          <div className="form-control">
+            <label className="font-medium">Age</label>
+            <input
+              type="number"
+              name="age"
+              defaultValue={age}
+              placeholder="Enter age"
+              className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm"
+            />
+          </div>
+
+          <div className="form-control">
+            <label className="font-medium">Height (cm)</label>
+            <input
+              type="number"
+              name="height"
+              defaultValue={height}
+              placeholder="Enter height"
+              className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm"
+            />
+          </div>
+
+          <div className="form-control">
+            <label className="font-medium">Weight (kg)</label>
+            <input
+              type="number"
+              name="weight"
+              defaultValue={weight}
+              placeholder="Enter weight"
+              className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm"
+            />
+          </div>
+        </div>
+
+        {/* Disease and Diagnosis */}
+        <div className="form-control mb-4">
+          <label className="font-medium">Disease</label>
           <input
             type="text"
-            name="patientName"
-            defaultValue={name}
-            placeholder="Enter patient name"
-            className="w-full p-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-teal-400"
+            name="disease"
+            defaultValue={disease}
+            placeholder="Enter disease"
+            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm"
           />
         </div>
-        <div className="form-group">
-          <label className="text-gray-600 font-medium mb-2 block">Age</label>
-          <input
-            type="number"
-            name="age"
-            defaultValue={age}
-            placeholder="Enter age"
-            className="w-full p-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-teal-400"
+
+        <div className="form-control mb-4">
+          <label className="font-medium">Diagnosis</label>
+          <textarea
+            name="diagnosis"
+            defaultValue={diagnosis}
+            placeholder="Enter diagnosis details"
+            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm"
           />
         </div>
-        <div className="form-group">
-          <label className="text-gray-600 font-medium mb-2 block">Height (cm)</label>
-          <input
-            type="number"
-            name="height"
-            defaultValue={height}
-            placeholder="Enter height"
-            className="w-full p-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-teal-400"
-          />
-        </div>
-        <div className="form-group">
-          <label className="text-gray-600 font-medium mb-2 block">Weight (kg)</label>
-          <input
-            type="number"
-            name="weight"
-            defaultValue={weight}
-            placeholder="Enter weight"
-            className="w-full p-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-teal-400"
-          />
-        </div>
-      </div>
-  
-      {/* Disease and Diagnosis */}
-      <div className="mb-8">
-        <label className="text-gray-600 font-medium mb-2 block">Disease</label>
-        <input
-          type="text"
-          name="disease"
-          defaultValue={disease}
-          placeholder="Enter disease"
-          className="w-full p-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-teal-400"
-        />
-      </div>
-      <div className="mb-8">
-        <label className="text-gray-600 font-medium mb-2 block">Diagnosis</label>
-        <textarea
-          name="diagnosis"
-          defaultValue={diagnosis}
-          placeholder="Enter diagnosis details"
-          className="w-full p-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-teal-400"
-        />
-      </div>
-  
-      {/* Appointment Details */}
-      <div className="mb-8">
-        <label className="text-gray-600 font-medium mb-2 block">Appointment Date</label>
-        <input
-          type="date"
-          name="appointmentDate"
-          defaultValue={appointmentDate}
-          className="w-full p-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-teal-400"
-        />
-      </div>
-  
-      {/* Medicine Details */}
-      <h3 className="text-xl font-semibold text-gray-700 mb-6">Medicine Details</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="form-group">
-          <label className="text-gray-600 font-medium mb-2 block">Medicine Name</label>
+
+        {/* Medicines */}
+        <div className="form-control mb-4">
+          <label className="font-medium">Medicine Name</label>
           <input
             type="text"
             name="medicineName"
             defaultValue={medicines?.[0]?.medicineName}
             placeholder="Enter medicine name"
-            className="w-full p-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-teal-400"
+            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm"
           />
         </div>
-        <div className="form-group">
-          <label className="text-gray-600 font-medium mb-2 block">Dosage</label>
+
+        <div className="form-control mb-4">
+          <label className="font-medium">Dosage</label>
           <input
             type="text"
             name="medicineDosage"
             defaultValue={medicines?.[0]?.medicineDosage}
             placeholder="Enter dosage"
-            className="w-full p-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-teal-400"
+            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm"
           />
         </div>
-        <div className="form-group">
-          <label className="text-gray-600 font-medium mb-2 block">Unit</label>
+
+        <div className="form-control mb-4">
+          <label className="font-medium">Unit of Measurement</label>
           <input
             type="text"
             name="measurementUnit"
             defaultValue={medicines?.[0]?.measurementUnit}
             placeholder="Enter unit"
-            className="w-full p-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-teal-400"
+            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm"
           />
         </div>
-        <div className="form-group">
-          <label className="text-gray-600 font-medium mb-2 block">Intake Type</label>
+
+        <div className="form-control mb-4">
+          <label className="font-medium">Intake Type</label>
           <input
             type="text"
             name="intakeType"
             defaultValue={medicines?.[0]?.intakeType}
             placeholder="Enter intake type"
-            className="w-full p-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-teal-400"
+            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm"
           />
         </div>
-      </div>
-  
-      {/* Schedule */}
-      <div className="mb-8">
-        <label className="text-gray-600 font-medium mb-2 block">Schedule Day</label>
-        <input
-          type="text"
-          name="day"
-          defaultValue={medicines?.[0]?.schedule?.[0]?.day}
-          placeholder="Enter schedule day"
-          className="w-full p-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-teal-400"
-        />
-      </div>
-  
-      {/* Submit Button */}
-      <div className="text-right">
-        <button
-          type="submit"
-          className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-200"
-        >
-          Update Patient
-        </button>
-      </div>
-    </form>
-  </div>
-  
+
+        <div className="form-control mb-4">
+          <label className="font-medium">Necessary Dosage</label>
+          <input
+            type="text"
+            name="necessityDosage"
+            defaultValue={medicines?.[0]?.necessityDosage}
+            placeholder="Enter necessary dosage"
+            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm"
+          />
+        </div>
+
+        <div className="form-control mb-6">
+          <label className="font-medium">Schedule Day</label>
+          <input
+            type="text"
+            name="day"
+            defaultValue={medicines?.[0]?.schedule[0]?.day}
+            placeholder="Enter schedule day"
+            className="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm"
+          />
+        </div>
+
+        {/* Submit Button */}
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            className="bg-teal-500 hover:bg-teal-600 text-white font-semibold py-3 px-8 rounded-full"
+          >
+            Update Patient
+          </button>
+        </div>
+      </form>
+    </div>
+   </div>
   );
 };
 
