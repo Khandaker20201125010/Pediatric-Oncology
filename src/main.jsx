@@ -24,7 +24,7 @@ const router = createBrowserRouter([
     errorElement: <div>404 Not found</div>,
     children: [
       {
-        path: '/',
+        path: '/login',
         element: <Login />,
       },
       {
@@ -32,8 +32,8 @@ const router = createBrowserRouter([
         element: <SignUp />,
       },
       {
-        path: '/allPatients',
-        element: <PriveteRoutes><AllPatients /></PriveteRoutes>,
+        path: '/',
+        element: <AllPatients />,
         loader: () => fetch('https://pediatric-oncology-server.vercel.app/allPatients'),
       },
       {

@@ -11,6 +11,8 @@ import { useState } from "react";
 import Swal from "sweetalert2";
 import { Helmet } from "react-helmet-async";
 import { MdOutlineAutoDelete } from "react-icons/md";
+import CustomCalendar from "../CustomCalendar/CustomCalendar ";
+import CustomCalenderSm from "../CustomCalendar/CustomCalenderSm";
 
 const PatientDetails = () => {
   const patientData = useLoaderData();
@@ -18,6 +20,7 @@ const PatientDetails = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [dayCount, setDayCount] = useState(1);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   const {
     _id,
@@ -263,8 +266,9 @@ const PatientDetails = () => {
     closeModal();
   };
   const handleDeleteDay = async (medicineIndex, scheduleIndex) => {
-    const scheduleItem = patient.medicines[medicineIndex].schedule[scheduleIndex];
-    
+    const scheduleItem =
+      patient.medicines[medicineIndex].schedule[scheduleIndex];
+
     const result = await Swal.fire({
       title: "Are you sure?",
       text: `Do you want to delete Day ${scheduleItem.day}?`,
@@ -274,17 +278,17 @@ const PatientDetails = () => {
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
     });
-  
+
     if (result.isConfirmed) {
       // Update local state
       const updatedMedicines = [...patient.medicines];
       updatedMedicines[medicineIndex].schedule.splice(scheduleIndex, 1);
-  
+
       setPatient((prevPatient) => ({
         ...prevPatient,
         medicines: updatedMedicines,
       }));
-  
+
       try {
         // Update backend
         const response = await fetch(
@@ -296,7 +300,7 @@ const PatientDetails = () => {
           }
         );
         const data = await response.json();
-  
+
         if (data && data.medicines) {
           setPatient((prevPatient) => ({
             ...prevPatient,
@@ -306,13 +310,13 @@ const PatientDetails = () => {
         }
       } catch (error) {
         console.error("Error deleting schedule day:", error);
-  
+
         // Revert state in case of failure
         setPatient((prevPatient) => ({
           ...prevPatient,
           medicines: patient.medicines,
         }));
-  
+
         Swal.fire(
           "Error!",
           "There was a problem deleting the day. Please try again.",
@@ -321,20 +325,45 @@ const PatientDetails = () => {
       }
     }
   };
-  
+
   return (
-    <div className="container mx-auto mt-12 p-8 bg-gray-50 rounded-lg shadow-lg  border ">
-      <Helmet>Patient Details || Pediatric Oncology</Helmet>
-      <div className="border-b pb-6 mb-6">
-        <h2 className="text-5xl font-bold text-blue-700 mb-2">
-          {name}'s Medical Overview
-        </h2>
-        <p className="text-gray-500 text-lg mb-4">
-          Patient Details & Medication Information
-        </p>
+    <div className="container mx-auto mt-12 p-8 bg-gray-50 rounded-lg shadow-lg border">
+      <Helmet>
+        <title>Patient Details || Pediatric Oncology</title>
+      </Helmet>
+
+      <div className="container mx-auto px-4">
+        {/* Responsive Flex Container */}
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
+          {/* Left Section - Patient Overview */}
+          <div className="w-full lg:w-2/3 border-b pb-6">
+            <h2 className="text-4xl sm:text-5xl font-bold text-blue-700 mb-2">
+              {name}'s Medical Overview
+            </h2>
+            <p className="text-gray-500 text-lg">
+              Patient Details & Medication Information
+            </p>
+          </div>
+
+          {/* Right Section - Calendar */}
+          <div className="w-full lg:w-1/3">
+            {/* Desktop Calendar */}
+            <div className="hidden sm:block">
+              <CustomCalendar
+                selectedDate={selectedDate}
+                setSelectedDate={setSelectedDate}
+              />
+            </div>
+            {/* Mobile Calendar */}
+            <div className="block sm:hidden">
+              <CustomCalenderSm />
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+      {/* Info Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8 mt-8">
         {[
           {
             label: "Age",
@@ -372,6 +401,7 @@ const PatientDetails = () => {
         ))}
       </div>
 
+      {/* Detail Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         <DetailCard
           label="Disease"
@@ -390,103 +420,92 @@ const PatientDetails = () => {
         />
       </div>
 
+      {/* Medication Plan */}
       <div className="border-t pt-6">
-        <h3 className="text-3xl font-semibold text-blue-700 mb-4">
-          Medication Plan
-        </h3>
-        <p className="text-gray-600 mb-4">
-          Treatment Type: <span className="font-medium text-gray-800"></span>
-        </p>
+  <h3 className="text-2xl md:text-3xl font-semibold text-blue-700 mb-4">
+    Medication Plan
+  </h3>
+  <p className="text-gray-600 mb-4 text-sm md:text-base">
+    Treatment Type: <span className="font-medium text-gray-800"></span>
+  </p>
 
-        {medicines?.map((med, medIndex) => (
-          <div key={medIndex} className="mb-6">
-            <div className="bg-white rounded-lg p-6 shadow-md mb-4 transition-shadow hover:shadow-lg">
-              <div className="flex justify-between items-center">
-                <p className="text-2xl font-semibold text-gray-900 flex items-center">
-                  <FaPills className="mr-2 text-blue-500" /> {med.medicineName}
-                </p>
-                <div className="flex justify-center space-x-2 text-lg">
-                  <p>
-                    Dosage:{" "}
-                    <span className="text-blue-500 font-bold">
-                      {" "}
-                      {med.medicineDosage}
-                    </span>{" "}
-                    {med.measurementUnit}
-                  </p>
-                  <p>Intake-Type:{med.intakeType}</p>
-                </div>
-                <p className="font-medium text-gray-500">
-                  <span>
-                    {" "}
-                    Total:{" "}
-                    <span className="text-red-500 font-bold">
-                      {(
-                        Math.sqrt((height * weight) / 3600) * med.medicineDosage
-                      ).toFixed(3)}
-                    </span>
-                  </span>
-                  {med.measurementUnit}
-                </p>
-              </div>
+  {medicines?.map((med, medIndex) => (
+    <div key={medIndex} className="mb-6">
+      <div className="bg-white rounded-lg p-4 md:p-6 shadow-md mb-4 transition-shadow hover:shadow-lg">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <p className="text-xl md:text-2xl font-semibold text-gray-900 flex items-center">
+            <FaPills className="mr-2 text-blue-500 text-lg md:text-2xl" />{" "}
+            {med.medicineName}
+          </p>
 
-              <div className="mt-4 bg-gray-100 p-4 rounded-lg shadow-md">
-                <h4 className="text-xl font-semibold text-gray-800 mb-2">
-                  Medicine Schedule
-                </h4>
-                <div className="grid grid-cols-7 gap-2">
-                  {med.schedule?.map((schedule, scheduleIndex) => (
-                    <div
-                      key={scheduleIndex}
-                      className="flex flex-col items-center"
-                    >
-                      <div className="flex gap-2">
-                        <div
-                          onClick={() =>
-                            handleDayClick(medIndex, scheduleIndex)
-                          }
-                          className={`${getScheduleColor(
-                            schedule.taken,
-                            schedule.date
-                          )} 
-      text-white rounded-full px-4 py-2 mb-1 text-center text-sm font-medium 
-      transition-transform hover:scale-105 cursor-pointer`}
-                        >
-                          Day {schedule.day}
-                        </div>
-                        <button
-                          onClick={() =>
-                            handleDeleteDay(medIndex, scheduleIndex)
-                          }
-                          className="hover:scale-105 transition-transform"
-                        >
-                          <MdOutlineAutoDelete className="text-red-500 text-2xl" />
-                        </button>
-                      </div>
+          <div className="flex flex-col sm:flex-row justify-center items-start sm:items-center gap-2 text-sm md:text-lg">
+            <p>
+              Dosage:{" "}
+              <span className="text-blue-500 font-bold">
+                {med.medicineDosage}
+              </span>{" "}
+              {med.measurementUnit}
+            </p>
+            <p>Intake-Type: {med.intakeType}</p>
+          </div>
 
-                      <p className="text-gray-700 text-sm font-medium">
-                        {schedule.date}
-                      </p>
-                    </div>
-                  ))}
-                  <div className="flex flex-col items-center">
-                    <button
-                      onClick={() => handleAddDay(med.medicineName)}
-                      className="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-4 py-2 text-center text-sm font-medium transition-transform hover:scale-105 flex items-center space-x-1"
-                    >
-                      <FaPlus /> <span>Add day</span>
-                    </button>
+          <p className="font-medium text-gray-500 text-sm md:text-base">
+            Total:{" "}
+            <span className="text-red-500 font-bold">
+              {(Math.sqrt((height * weight) / 3600) * med.medicineDosage).toFixed(3)}
+            </span>{" "}
+            {med.measurementUnit}
+          </p>
+        </div>
+
+        {/* Medicine Schedule */}
+        <div className="mt-4 bg-gray-100 p-4 rounded-lg shadow-md">
+          <h4 className="text-lg md:text-xl font-semibold text-gray-800 mb-2">
+            Medicine Schedule
+          </h4>
+          <div className="grid grid-cols-2 sm:grid-cols-7 gap-2">
+            {med.schedule?.map((schedule, scheduleIndex) => (
+              <div key={scheduleIndex} className="flex flex-col items-center">
+                <div className="flex gap-2">
+                  <div
+                    onClick={() => handleDayClick(medIndex, scheduleIndex)}
+                    className={`${getScheduleColor(schedule.taken, schedule.date)} 
+                      text-white rounded-full px-2 md:px-3 py-1 mb-1 text-center text-xs md:text-sm font-medium 
+                      transition-transform hover:scale-105 cursor-pointer`}
+                  >
+                    Day {schedule.day}
                   </div>
+                  <button
+                    onClick={() => handleDeleteDay(medIndex, scheduleIndex)}
+                    className="transition-transform hover:scale-105"
+                  >
+                    <MdOutlineAutoDelete className="text-red-500 text-lg md:text-2xl" />
+                  </button>
                 </div>
+                <p className="text-gray-700 text-xs md:text-sm font-medium">
+                  {schedule.date}
+                </p>
               </div>
+            ))}
+            <div className="flex flex-col items-center">
+              <button
+                onClick={() => handleAddDay(med.medicineName)}
+                className="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-2 md:px-3 py-1 text-center text-xs md:text-sm font-medium transition-transform hover:scale-105 flex items-center space-x-1"
+              >
+                <FaPlus /> <span>Add day</span>
+              </button>
             </div>
           </div>
-        ))}
+        </div>
       </div>
+    </div>
+  ))}
+</div>
 
-      {/* Modal */}
+
+      {/* Modal for Adding Days */}
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full">
             <h3 className="text-2xl font-semibold text-blue-700 mb-4">
               Add Days to Schedule for {showModal}
@@ -518,7 +537,8 @@ const PatientDetails = () => {
         </div>
       )}
 
-      <div>
+      {/* Modal for Adding Medicine */}
+      <div className="mt-8">
         <button
           onClick={openModal}
           className="bg-blue-500 hover:bg-blue-600 text-white rounded-xl px-4 py-2 text-center text-sm font-medium transition-transform hover:scale-105 flex items-center space-x-1"
@@ -527,7 +547,7 @@ const PatientDetails = () => {
         </button>
 
         {isModalOpen && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-96">
               <h2 className="text-xl font-semibold mb-4">Add New Medicine</h2>
               <form onSubmit={handleAddMedicineSubmit}>
@@ -622,13 +642,16 @@ const PatientDetails = () => {
 };
 
 const DetailCard = ({ label, value, icon }) => (
-  <div className="bg-white rounded-lg p-6 shadow-md transition-transform transform hover:scale-105 flex items-center">
+  <div className="bg-white rounded-lg p-6 shadow-md transition-transform transform hover:scale-105 flex flex-col sm:flex-row items-center">
+  <div className="text-3xl mb-4 sm:mb-0 sm:mr-4">
     {icon}
-    <div>
-      <p className="text-lg font-semibold text-gray-700">{label}</p>
-      <p className="text-2xl text-gray-900">{value}</p>
-    </div>
   </div>
+  <div className="text-center sm:text-left">
+    <p className="text-lg font-semibold text-gray-700">{label}</p>
+    <p className="text-2xl text-gray-900">{value}</p>
+  </div>
+</div>
+
 );
 
 export default PatientDetails;

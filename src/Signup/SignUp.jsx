@@ -1,6 +1,6 @@
 import React, { useContext, useRef, useState } from "react";
 import useAxiosPublic from "../Hooks/useAxiosPublic";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../Providers/AuthProvider";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
@@ -16,7 +16,8 @@ const SignUp = () => {
   const axiosPublic = useAxiosPublic();
   const cardRef = useRef(null);
   const [showPassword, setShowPassword] = useState(false);
-  const { createUser, updateUserProfile, googleSignIn, facebookSignIn } = useContext(AuthContext);
+  const { createUser, updateUserProfile, googleSignIn, facebookSignIn } =
+    useContext(AuthContext);
   const navigate = useNavigate();
   const {
     register,
@@ -49,7 +50,7 @@ const SignUp = () => {
           showConfirmButton: false,
           timer: 1500,
         });
-        navigate("/allPatients", { replace: true });
+        navigate("/", { replace: true });
       });
     });
   };
@@ -223,10 +224,12 @@ const SignUp = () => {
           </button>
         </div>
         <div className="mt-5">
-          Don't have an account?{" "}
-          <button>
-            <span className="text-red-500 hover:font-bold">Sign UP</span>
-          </button>
+          Already an account?{" "}
+          <Link to='/login'>
+            <button>
+              <span className="text-red-500 hover:font-bold">Sign In</span>
+            </button>
+          </Link>
         </div>
       </div>
     </div>

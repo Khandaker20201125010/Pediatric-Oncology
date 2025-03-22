@@ -8,79 +8,86 @@ import { AuthContext } from "../Providers/AuthProvider";
 const Dashboard = () => {
   const {user} =useContext(AuthContext);
   const navigate = useNavigate();
-  const handleSubmit = (e) => {
-    e.preventDefault();
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-    const form = e.target;
+  if (!user || !user.email) {
+    Swal.fire({
+      icon: "error",
+      title: "Unauthorized",
+      text: "You must be logged in to add a patient!",
+    });
+    return;
+  }
 
-    const name = form.patientName.value;
-    const age = form.age.value;
-    const height = form.height.value;
-    const weight = form.weight.value;
-    const disease = form.disease.value;
-    const diagnosis = form.diagnosis.value;
-    const appointmentDate = form.appointmentDate.value;
-    const medicineName = form.medicineName.value;
-    const medicineDosage = form.medicineDosage.value;
-    const necessityDosage = form.necessityDosage.value;
-    const measurementUnit = form.measurementUnit.value;
-    const intakeType = form.intakeType.value;
-    const day = form.day.value;
+  const form = e.target;
 
-    const patient = {
-      email: user?.email,
-      name,
-      age,
-      height,
-      weight,
-      disease,
-      diagnosis,
-      appointmentDate,
-      medicines: [
-        {
-          medicineName,
-          medicineDosage,
-          measurementUnit,
-          intakeType,
-          necessityDosage,
-          schedule: [
-            {
-              day: day,
-              date: appointmentDate,
-              taken: false,
-            },
-          ],
-        },
-      ],
-    };
+  const name = form.patientName.value;
+  const age = form.age.value;
+  const height = form.height.value;
+  const weight = form.weight.value;
+  const disease = form.disease.value;
+  const diagnosis = form.diagnosis.value;
+  const appointmentDate = form.appointmentDate.value;
+  const medicineName = form.medicineName.value;
+  const medicineDosage = form.medicineDosage.value;
+  const necessityDosage = form.necessityDosage.value;
+  const measurementUnit = form.measurementUnit.value;
+  const intakeType = form.intakeType.value;
+  const day = form.day.value;
 
-    fetch("https://pediatric-oncology-server.vercel.app/allPatients", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+  const patient = {
+    email: user.email, // Ensure the user is authenticated
+    name,
+    age,
+    height,
+    weight,
+    disease,
+    diagnosis,
+    appointmentDate,
+    medicines: [
+      {
+        medicineName,
+        medicineDosage,
+        measurementUnit,
+        intakeType,
+        necessityDosage,
+        schedule: [
+          {
+            day: day,
+            date: appointmentDate,
+            taken: false,
+          },
+        ],
       },
-      body: JSON.stringify(patient),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        Swal.fire({
-          title: "Success!",
-          text: "Patient Added Successfully",
-          icon: "success",
-          confirmButtonText: "Great",
-        });
-        navigate("/allPatients");
-        // Handle success or error
-      })
-      .catch((error) => {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: error.message,
-        });
-        // Handle error
-      });
+    ],
   };
+
+  fetch("https://pediatric-oncology-server.vercel.app/allPatients", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(patient),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      Swal.fire({
+        title: "Success!",
+        text: "Patient Added Successfully",
+        icon: "success",
+        confirmButtonText: "Great",
+      });
+      navigate("/");
+    })
+    .catch((error) => {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: error.message,
+      });
+    });
+};
 
   return (
     <div className="min-h-screen bg-gray-100 py-10">

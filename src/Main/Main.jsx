@@ -3,7 +3,7 @@ import Navbar from "../Navbar/Navbar";
 
 const Main = () => {
   const location = useLocation();
-  const noHeaderFooter = location.pathname === "/" || location.pathname === "/signUp";
+  const noHeaderFooter = location.pathname === "/login" || location.pathname === "/signUp";
    
   return (
     <div className="">

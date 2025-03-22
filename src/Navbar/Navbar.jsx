@@ -21,7 +21,7 @@ const Navbar = () => {
               ? "font-bold text-blue-900 hover:text-blue-700 tooltip tooltip-warning  text-3xl  tooltip-bottom rounded-full"
               : "font-bold text-teal-900 hover:text-blue-600 tooltip tooltip-warning tooltip-bottom text-3xl";
           }}
-          to="/allPatients"
+          to="/"
         >
           <FaUserDoctor />
         </NavLink>
@@ -52,7 +52,7 @@ const Navbar = () => {
               ? "font-bold text-blue-900 hover:text-blue-700 tooltip tooltip-warning  text-xl  tooltip-bottom rounded-full"
               : "font-bold text-teal-900 hover:text-blue-600 tooltip tooltip-warning tooltip-bottom text-xl";
           }}
-          to="/allPatients"
+          to="/"
         >
           All Patients
         </NavLink>
@@ -143,9 +143,9 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <Link to="/">
+                <Link to="/login">
                   <button className="btn btn-success btn-sm text-white">
-                    Join us
+                    Join 
                   </button>
                 </Link>
               </>
