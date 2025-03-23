@@ -5,7 +5,6 @@ import Patient from "./Patient";
 import { AuthContext } from "../Providers/AuthProvider";
 import moment from "moment";
 
-
 const AllPatients = () => {
   const { user } = useContext(AuthContext); // Get logged-in user
   const [allPatient, refetch] = usePatientData(); // Fetch all patients
@@ -23,7 +22,7 @@ const AllPatients = () => {
 
   // Filter patients added by logged-in user
   const userPatients = allPatient.filter(
-    (patient) => patient.email === user?.email
+    (patient) => patient.addedBy === user?.email // Use 'addedBy' instead of 'email'
   );
 
   // Filter by search term
@@ -40,7 +39,7 @@ const AllPatients = () => {
         My Patients
       </h1>
       <div className="text-center text-xl font-bold mb-2">{time}</div>
-   
+
       {/* Search Input */}
       <div className="flex justify-center mb-6">
         <input

@@ -38,6 +38,7 @@ const handleSubmit = (e) => {
 
   const patient = {
     email: user.email, // Ensure the user is authenticated
+    addedBy: user.email, // Adding addedBy field to associate patient with user
     name,
     age,
     height,
@@ -62,6 +63,7 @@ const handleSubmit = (e) => {
       },
     ],
   };
+  
 
   fetch("https://pediatric-oncology-server.vercel.app/allPatients", {
     method: "POST",

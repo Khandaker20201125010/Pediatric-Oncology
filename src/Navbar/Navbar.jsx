@@ -3,6 +3,7 @@ import { FaUserDoctor } from "react-icons/fa6";
 import { MdDashboardCustomize } from "react-icons/md";
 import { Link, NavLink } from "react-router-dom";
 import { AuthContext } from "../Providers/AuthProvider";
+import toast, { Toaster } from "react-hot-toast";
 
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);
@@ -40,6 +41,19 @@ const Navbar = () => {
           <MdDashboardCustomize />
         </NavLink>
       </li>
+      <li>
+        <NavLink
+          data-tip="View Patients"
+          className={({ isActive }) => {
+            return isActive
+              ? "font-bold text-blue-900 hover:text-blue-700 tooltip tooltip-warning  text-xl  tooltip-bottom rounded-full"
+              : "font-bold text-teal-900 hover:text-blue-600 tooltip tooltip-warning tooltip-bottom text-xl";
+          }}
+          to="/viewPatient"
+        >
+          View
+        </NavLink>
+      </li>
     </>
   );
   const mlinks = (
@@ -72,6 +86,19 @@ const Navbar = () => {
         </NavLink>
       </li>
       <li>
+        <NavLink
+          data-tip="View Patients"
+          className={({ isActive }) => {
+            return isActive
+              ? "font-bold text-blue-900 hover:text-blue-700 tooltip tooltip-warning  text-xl  tooltip-bottom rounded-full"
+              : "font-bold text-teal-900 hover:text-blue-600 tooltip tooltip-warning tooltip-bottom text-xl";
+          }}
+          to="/viewPatient"
+        >
+          View
+        </NavLink>
+      </li>
+      <li>
         {user ? (
           <>
             <button
@@ -95,6 +122,7 @@ const Navbar = () => {
   );
   return (
     <div className="bg-teal-100">
+      <Toaster />
       <div className="">
         <div className="navbar">
           <div className="navbar-start">
@@ -145,7 +173,7 @@ const Navbar = () => {
               <>
                 <Link to="/login">
                   <button className="btn btn-success btn-sm text-white">
-                    Join 
+                    Join
                   </button>
                 </Link>
               </>

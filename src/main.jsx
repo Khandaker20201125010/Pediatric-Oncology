@@ -13,6 +13,8 @@ import { HelmetProvider } from 'react-helmet-async';
 import SignUp from './Signup/SignUp';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import UpdatePatient from './Main/updatePatient/updatePatient';
+import Error from './Eorror/Error';
+import ViewAllPatients from './ViewallPatients/ViewAllPatients';
 
 // Create an instance of QueryClient
 const queryClient = new QueryClient();
@@ -21,7 +23,7 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <Main />,
-    errorElement: <div>404 Not found</div>,
+    errorElement: <Error   />,
     children: [
       {
         path: '/login',
@@ -34,7 +36,7 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <AllPatients />,
-        loader: () => fetch('https://pediatric-oncology-server.vercel.app/allPatients'),
+        // loader: () => fetch('https://pediatric-oncology-server.vercel.app/allPatients'),
       },
       {
         path: '/updatePatient/:id',
@@ -49,6 +51,10 @@ const router = createBrowserRouter([
       {
         path: '/dashboard',
         element: <PriveteRoutes><Dashboard /></PriveteRoutes>,
+      },
+      {
+        path: '/viewPatient',
+        element: <PriveteRoutes><ViewAllPatients></ViewAllPatients></PriveteRoutes>,
       },
     ],
   },
